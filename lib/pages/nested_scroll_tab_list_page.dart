@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scroll_master/util.dart';
 import '../config.dart';
 
 import '../widgets/nested_scroll_view_x/nested_scroll_view_x.dart';
@@ -38,7 +39,11 @@ class NestedScrollTabListPage extends StatelessWidget {
                 expandedHeight:
                     maxHeight - tabBar.preferredSize.height - topHeight,
                 flexibleSpace: FlexibleSpaceBar(
-                  title: Center(child: Text(projectName)),
+                  centerTitle: true,
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Text(projectName),
+                  ),
                   stretchModes: <StretchMode>[
                     StretchMode.zoomBackground,
                     StretchMode.blurBackground,
@@ -80,16 +85,19 @@ class NestedScrollTabListPage extends StatelessWidget {
 
   Widget _tile(int idx, Color color) => SliverToBoxAdapter(
         key: Key('$idx'),
-        child: Container(
-          height: 100,
-          color: color,
-          child: Center(
-            child: Text(
-              '$idx',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
+        child: GestureDetector(
+          onTap: () => showToast(),
+          child: Container(
+            height: 100,
+            color: color,
+            child: Center(
+              child: Text(
+                '$idx',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
               ),
             ),
           ),

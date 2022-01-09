@@ -9,6 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   pedantic: ^1.11.0
+  oktoast: ^3.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:scroll_master/util.dart';
 
 import '../config.dart';
 import '../widgets/tab_bar_view_x/extended_tabs.dart';
@@ -106,28 +107,31 @@ class _HorizontalScrollTabViewState extends State<HorizontalScrollTabView> {
       scrollDirection: Axis.horizontal,
       key: PageStorageKey<String>('H' + widget.text),
       itemBuilder: (_, idx) {
-        return Container(
-          width: screen.width,
-          padding: EdgeInsets.all(screen.width / 10),
+        return GestureDetector(
+          onTap: () => showToast(),
           child: Container(
-            color: Colors.blue,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Image.network(
-                    ius[tabIdx],
-                    width: screen.width,
-                    fit: BoxFit.cover,
+            width: screen.width,
+            padding: EdgeInsets.all(screen.width / 10),
+            child: Container(
+              color: Colors.blue,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Image.network(
+                      ius[tabIdx],
+                      width: screen.width,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(screen.width / 10),
-                  child: Text(
-                    widget.text + ' - ${idx + 1}',
-                    style: TextStyle(color: Colors.white),
+                  Container(
+                    padding: EdgeInsets.all(screen.width / 10),
+                    child: Text(
+                      widget.text + ' - ${idx + 1}',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

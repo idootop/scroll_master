@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scroll_master/util.dart';
 
 import '../config.dart';
 import '../widgets/tab_bar_view_x/extended_tabs.dart';
@@ -114,25 +115,28 @@ class _VerticalScrollTabViewState extends State<VerticalScrollTabView> {
           width: screen.width,
           height: screen.height - 180 - screen.width / 10,
           padding: EdgeInsets.all(screen.width / 10),
-          child: Container(
-            color: Colors.blue,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Image.network(
-                    ius[tabIdx],
-                    width: screen.width,
-                    fit: BoxFit.cover,
+          child: GestureDetector(
+            onTap: () => showToast(),
+            child: Container(
+              color: Colors.blue,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Image.network(
+                      ius[tabIdx],
+                      width: screen.width,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(screen.width / 10),
-                  child: Text(
-                    widget.text + ' - ${idx + 1}',
-                    style: TextStyle(color: Colors.white),
+                  Container(
+                    padding: EdgeInsets.all(screen.width / 10),
+                    child: Text(
+                      widget.text + ' - ${idx + 1}',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

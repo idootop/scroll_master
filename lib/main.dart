@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'pages/horizontal_scroll_tab_list_page.dart';
 import 'pages/nested_scroll_tab_list_page.dart';
 import 'pages/vertical_scroll_tab_list_page.dart';
@@ -11,9 +12,12 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ScrollMaster',
-      home: Home(),
+    return OKToast(
+      movingOnWindowChange: false,
+      child:  MaterialApp(
+        title: 'ScrollMaster',
+        home: Home(),
+      ),
     );
   }
 }
