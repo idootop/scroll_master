@@ -307,15 +307,10 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
   @override
   double unnestOffset(double value, _NestedScrollPosition source) {
     if (source == _outerPosition) {
-      if (_innerPosition!.pixels > _innerPosition!.minScrollExtent) {
-        ///inner在滚动，以inner位置为基准
-        return source.maxScrollExtent +
-            _innerPosition!.pixels -
-            _innerPosition!.minScrollExtent;
-      }
       return value;
     } else {
-      if (_outerPosition!.pixels < _outerPosition!.maxScrollExtent) {
+      if (_outerPosition!.maxScrollExtent - _outerPosition!.pixels >
+          precisionErrorTolerance) {
         ///outer在滚动，以outer位置为基准
         return _outerPosition!.pixels;
       }
