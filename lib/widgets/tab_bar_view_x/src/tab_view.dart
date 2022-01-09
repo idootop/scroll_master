@@ -156,9 +156,8 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
     if (_controllerIsValid)
       _controller!.animation!.removeListener(_handleTabControllerAnimationTick);
     _controller = newController;
-    if (_controller != null) {
+    if (_controller != null)
       _controller!.animation!.addListener(_handleTabControllerAnimationTick);
-    }
   }
 
   void _updatePhysics() {
@@ -295,12 +294,6 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
 
   // Called when the PageView scrolls
   bool _handleScrollNotification(ScrollNotification notification) {
-    // if (notification is ScrollStartNotification) {
-    //   _hanleIndexIsChanging(true);
-    // }
-    // if (notification is ScrollEndNotification) {
-    //   _hanleIndexIsChanging(false);
-    // }
     if (_warpUnderwayCount > 0) {
       return false;
     }
@@ -353,20 +346,6 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
                 state._pageController!.position.maxScrollExtent);
   }
 
-  var _indexIsChanging = false;
-
-  ///todo 我们希望在切换外部Tab时，如果又在TabView产生滑动手势，
-  ///todo 如果此时内部tabview可以滚动，我们希望内部/外部tab都不响应这个事件，直到外部tab切换完毕
-  void _hanleIndexIsChanging(bool indexIsChanging) {
-    if (indexIsChanging != _indexIsChanging) {
-      if (mounted) {
-        setState(() {
-          _indexIsChanging = indexIsChanging;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     assert(() {
@@ -400,10 +379,7 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
         child: result,
       );
     }
-    return AbsorbPointer(
-      absorbing: _indexIsChanging,
-      child: result,
-    );
+    return result;
   }
 
   void _initGestureRecognizers([ExtendedTabBarView? oldWidget]) {
@@ -500,7 +476,6 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
 
     // TODO(zmtzawqlp): if there are two drag, how to do we do?
     assert(!(_ancestor?._drag != null && _child?._drag != null));
-    //todo 更新滑动值
     if (_ancestor?._drag != null) {
       _ancestor!._drag!.update(details);
     } else if (_child?._drag != null) {
@@ -517,7 +492,6 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
           ? details.delta.dx
           : details.delta.dy;
 
-      //todo 当前过滑
       if ((delta < 0 &&
               _position!.extentAfter == 0 &&
               state!._position!.extentAfter != 0) ||

@@ -102,6 +102,8 @@ class _HorizontalScrollTabViewState extends State<HorizontalScrollTabView> {
     final screen = MediaQuery.of(context).size;
     final tabIdx = int.parse(widget.text.replaceAll('Tab', '')) - 1;
     return ListView.builder(
+      // 必须为NeverScrollableScrollPhysics，由外部TabScrollView更新positon
+      physics: NeverScrollableScrollPhysics(),
       itemCount: 3,
       controller: controller,
       scrollDirection: Axis.horizontal,

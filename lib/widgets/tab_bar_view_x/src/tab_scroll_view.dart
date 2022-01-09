@@ -27,19 +27,45 @@ class _TabScrollViewState extends State<TabScrollView> {
     _initGestureRecognizers();
   }
 
+  bool _handleGlowNotification(OverscrollIndicatorNotification notification) {
+    if (notification.depth == 0 &&
+        (_disallowGlow(notification.leading, {
+              'offset': _ancestor?._pageController?.offset,
+              'position': _ancestor?._pageController?.position,
+            }) ||
+            _disallowGlow(notification.leading, {
+              'offset': _controller.offset,
+              'position': _controller.position,
+            }))) {
+      notification.disallowGlow();
+      return true;
+    }
+    return false;
+  }
+
+  bool _disallowGlow(bool leading, Map<String, dynamic> p) {
+    if (p['position'] == null) {
+      return false;
+    }
+
+    return (leading && p['offset'] != p['position']?.minScrollExtent) ||
+        (!leading && p['offset'] != p['position']?.maxScrollExtent);
+  }
+
   @override
   Widget build(BuildContext context) {
     return _canDrag
         ? RawGestureDetector(
             gestures: _gestureRecognizers!,
             behavior: HitTestBehavior.opaque,
-            child: AbsorbPointer(
-              child: widget.child,
-            ),
+            child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: _handleGlowNotification, child: widget.child),
           )
         : widget.child;
   }
 
+  // todo 代理Listview，同步_physics
+  ScrollPhysics? _physics;
   _ExtendedTabBarViewState? _ancestor;
   late bool _canDrag;
 
@@ -67,6 +93,10 @@ class _TabScrollViewState extends State<TabScrollView> {
   }
 
   void _updatePhysics() {
+    _physics = _defaultScrollPhysics.applyTo(widget.physics == null
+        ? const PageScrollPhysics().applyTo(const ClampingScrollPhysics())
+        : const PageScrollPhysics().applyTo(widget.physics));
+
     if (widget.physics == null) {
       _canDrag = true;
     } else {

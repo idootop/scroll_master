@@ -108,6 +108,8 @@ class _VerticalScrollTabViewState extends State<VerticalScrollTabView> {
     return ListView.builder(
       itemCount: 3,
       controller: controller,
+      // 必须为NeverScrollableScrollPhysics，由外部TabScrollView更新positon
+      physics: NeverScrollableScrollPhysics(),
       scrollDirection: Axis.vertical,
       key: PageStorageKey<String>('V' + widget.text),
       itemBuilder: (_, idx) {
