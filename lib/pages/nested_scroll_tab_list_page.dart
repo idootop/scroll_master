@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_master/util.dart';
+import 'package:scroll_master/widgets/custom_nested_scroll_view/custom_nested_scroll_view.dart';
 import '../config.dart';
 
-import '../widgets/nested_scroll_view_x/nested_scroll_view_x.dart';
 import '../widgets/tab_bar_view_x/extended_tabs.dart';
 
 class NestedScrollTabListPage extends StatelessWidget {
@@ -23,37 +23,41 @@ class NestedScrollTabListPage extends StatelessWidget {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
-          body: NestedScrollViewX(
+          body: CustomNestedScrollView(
             physics: const BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics(),
             ),
-            pinnedHeaderSliverHeightBuilder: () => minHeight,
             headerSliverBuilder: (context, innerScrolled) => <Widget>[
-              SliverAppBar(
-                pinned: true,
-                stretch: true,
-                toolbarHeight:
-                    minHeight - tabBar.preferredSize.height - topHeight,
-                collapsedHeight:
-                    minHeight - tabBar.preferredSize.height - topHeight,
-                expandedHeight:
-                    maxHeight - tabBar.preferredSize.height - topHeight,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: Container(
-                    alignment: Alignment.center,
-                    child: Text(projectName),
+              CustomSliverOverlapAbsorber(
+                overscrollType: CustomOverscroll.outer,
+                handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context),
+                sliver: SliverAppBar(
+                  pinned: true,
+                  stretch: true,
+                  toolbarHeight:
+                      minHeight - tabBar.preferredSize.height - topHeight,
+                  collapsedHeight:
+                      minHeight - tabBar.preferredSize.height - topHeight,
+                  expandedHeight:
+                      maxHeight - tabBar.preferredSize.height - topHeight,
+                  flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: true,
+                    title: Container(
+                      alignment: Alignment.center,
+                      child: Text(projectName),
+                    ),
+                    stretchModes: <StretchMode>[
+                      StretchMode.zoomBackground,
+                      StretchMode.blurBackground,
+                    ],
+                    background: Image.asset(
+                      ius[1],
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  stretchModes: <StretchMode>[
-                    StretchMode.zoomBackground,
-                    StretchMode.blurBackground,
-                  ],
-                  background: Image.asset(
-                    ius[1],
-                    fit: BoxFit.cover,
-                  ),
+                  bottom: tabBar,
                 ),
-                bottom: tabBar,
               ),
             ],
             body: ExtendedTabBarView(children: [
@@ -70,16 +74,27 @@ class NestedScrollTabListPage extends StatelessWidget {
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
-          slivers: List.generate(
+          slivers: [
+            Builder(
+              builder: (context) => CustomSliverOverlapInjector(
+                overscrollType: CustomOverscroll.outer,
+                handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context),
+              ),
+            ),
+            ...List.generate(
               20,
               (idx) => _tile(
-                  reverse ? 20 - idx : idx + 1,
-                  const [
-                    Colors.yellow,
-                    Colors.black,
-                    Colors.blue,
-                    Colors.purple,
-                  ][idx % 4])),
+                reverse ? 20 - idx : idx + 1,
+                const [
+                  Colors.yellow,
+                  Colors.black,
+                  Colors.blue,
+                  Colors.purple,
+                ][idx % 4],
+              ),
+            ),
+          ],
         ),
       );
 
@@ -88,7 +103,7 @@ class NestedScrollTabListPage extends StatelessWidget {
         child: GestureDetector(
           onTap: () => showToast(),
           child: Container(
-            height: 100,
+            height: 64,
             color: color,
             child: Center(
               child: Text(

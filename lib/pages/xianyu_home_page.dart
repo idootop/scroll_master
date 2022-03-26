@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:scroll_master/util.dart';
 import 'package:scroll_master/widgets/alive_keeper.dart';
+import 'package:scroll_master/widgets/custom_nested_scroll_view/custom_nested_scroll_view.dart';
 import 'package:scroll_master/widgets/l_sliver_app_bar.dart';
 
-import '../widgets/nested_scroll_view_x/nested_scroll_view_x.dart';
 import '../widgets/tab_bar_view_x/extended_tabs.dart';
 
 import 'package:get/get.dart';
@@ -72,7 +72,6 @@ class RefreshContoller extends GetxController {
 
   Future<void> handlePointerEvent(PointerEvent event) async {
     if (event is PointerUpEvent || event is PointerCancelEvent) {
-      print('cancel');
       if (_status == RefreshStatus.release2refresh) {
         // 在释放刷新阶段放手，则刷新
         status = RefreshStatus.refreshing;
@@ -152,15 +151,15 @@ class XianyuHomePage extends HookWidget {
                     child: Text('发现'),
                   ),
                 ),
-                Container(
-                  height: state.innerTabBarHeight,
-                  color: Colors.lightBlueAccent,
-                )
+                SizedBox(height: state.innerTabBarHeight)
               ],
             ),
           );
         },
-        bottom: innerTabBar,
+        bottom: PreferredSize(
+          preferredSize: Size(Get.width, innerTabBar.preferredSize.height),
+          child: Container(color: Colors.lightBlueAccent, child: innerTabBar),
+        ),
       ),
     );
   }
@@ -215,7 +214,7 @@ class XianyuHomePage extends HookWidget {
                     height: MediaQuery.of(context).size.height,
                     child: ExtendedTabBarView(children: [
                       AliveKeeper(child: nestedScrollViewTab(controller)),
-                      AliveKeeper(child: blankTab(context, controller2)),
+                      AliveKeeper(child: blankTab(controller2)),
                     ]),
                   ),
                 ],
@@ -259,36 +258,45 @@ class XianyuHomePage extends HookWidget {
   Widget tabBar(text) =>
       Container(height: 48 - 2, alignment: Alignment.center, child: Text(text));
 
-  Widget blankTab(context, controller2) => SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: ListView(
-          controller: controller2,
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
+  Widget blankTab(controller2) => Builder(
+        builder: (context) => SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: ListView(
+            controller: controller2,
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: Text('关注'),
+                ),
+              )
+            ],
           ),
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Center(
-                child: Text('关注'),
-              ),
-            )
-          ],
         ),
       );
 
   Widget nestedScrollViewTab(controller) => DefaultTabController(
         length: 2,
-        child: NestedScrollViewX(
+        child: CustomNestedScrollView(
           controller: controller,
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
-          pinnedHeaderSliverHeightBuilder: () =>
-              RefreshContoller.to.innerTabBarHeight,
-          headerSliverBuilder: (_, __) => <Widget>[header()],
+          headerSliverBuilder: (_, __) => <Widget>[
+            Builder(
+              builder: (context) => CustomSliverOverlapAbsorber(
+                overscrollType: CustomOverscroll.outer,
+                handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context),
+                sliver: header(),
+              ),
+            ),
+          ],
           body: ExtendedTabBarView(children: [
             AliveKeeper(child: _tabView()),
             AliveKeeper(child: _tabView(true)),
@@ -297,16 +305,36 @@ class XianyuHomePage extends HookWidget {
       );
 }
 
-Widget _tabView([bool reverse = false]) => ListView.builder(
-    itemCount: 20,
-    itemBuilder: (_, idx) => _tile(
-        reverse ? 20 - idx : idx + 1,
-        const [
-          Colors.yellow,
-          Colors.black,
-          Colors.blue,
-          Colors.purple,
-        ][idx % 4]));
+Widget _tabView([bool reverse = false]) => CustomScrollView(
+      // 必须是这个 scrollphysics
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      slivers: <Widget>[
+        Builder(
+          builder: (context) => CustomSliverOverlapInjector(
+            overscrollType: CustomOverscroll.outer,
+            handle:
+                CustomNestedScrollView.sliverOverlapAbsorberHandleFor(context),
+          ),
+        ),
+        SliverFixedExtentList(
+          itemExtent: 64,
+          delegate: SliverChildBuilderDelegate(
+            (_, idx) => _tile(
+              reverse ? 20 - idx : idx + 1,
+              const [
+                Colors.yellow,
+                Colors.black,
+                Colors.blue,
+                Colors.purple,
+              ][idx % 4],
+            ),
+            childCount: 20,
+          ),
+        )
+      ],
+    );
 
 Widget _tile(int idx, Color color) => GestureDetector(
       onTap: () => showToast(),
