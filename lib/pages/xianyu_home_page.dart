@@ -287,14 +287,12 @@ class XianyuHomePage extends HookWidget {
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
-          headerSliverBuilder: (_, __) => <Widget>[
-            Builder(
-              builder: (context) => CustomSliverOverlapAbsorber(
-                overscrollType: CustomOverscroll.outer,
-                handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
-                    context),
-                sliver: header(),
-              ),
+          headerSliverBuilder: (context, __) => <Widget>[
+            CustomSliverOverlapAbsorber(
+              overscrollType: CustomOverscroll.outer,
+              handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
+                  context),
+              sliver: header(),
             ),
           ],
           body: ExtendedTabBarView(children: [
@@ -305,23 +303,23 @@ class XianyuHomePage extends HookWidget {
       );
 }
 
-Widget _tabView([bool reverse = false]) => CustomScrollView(
-      // 必须是这个 scrollphysics
-      physics: const BouncingScrollPhysics(
-        parent: AlwaysScrollableScrollPhysics(),
-      ),
-      slivers: <Widget>[
-        Builder(
-          builder: (context) => CustomSliverOverlapInjector(
-            overscrollType: CustomOverscroll.outer,
-            handle:
-                CustomNestedScrollView.sliverOverlapAbsorberHandleFor(context),
-          ),
+Widget _tabView([bool reverse = false]) => Builder(builder: (context) {
+      return CustomScrollView(
+        key: PageStorageKey<String>('$reverse'),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
         ),
-        SliverFixedExtentList(
-          itemExtent: 64,
-          delegate: SliverChildBuilderDelegate(
-            (_, idx) => _tile(
+        slivers: <Widget>[
+          Builder(
+            builder: (context) => CustomSliverOverlapInjector(
+              overscrollType: CustomOverscroll.outer,
+              handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
+                  context),
+            ),
+          ),
+          ...List.generate(
+            20,
+            (idx) => _tile(
               reverse ? 20 - idx : idx + 1,
               const [
                 Colors.yellow,
@@ -330,24 +328,26 @@ Widget _tabView([bool reverse = false]) => CustomScrollView(
                 Colors.purple,
               ][idx % 4],
             ),
-            childCount: 20,
           ),
-        )
-      ],
-    );
+        ],
+      );
+    });
 
-Widget _tile(int idx, Color color) => GestureDetector(
-      onTap: () => showToast(),
-      child: Container(
-        height: 100,
-        color: color,
-        child: Center(
-          child: Text(
-            '$idx',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
+Widget _tile(int idx, Color color) => SliverToBoxAdapter(
+      key: Key('$idx'),
+      child: GestureDetector(
+        onTap: () => showToast(),
+        child: Container(
+          height: 64,
+          color: color,
+          child: Center(
+            child: Text(
+              '$idx',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
             ),
           ),
         ),
