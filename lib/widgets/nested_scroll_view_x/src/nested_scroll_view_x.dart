@@ -125,7 +125,7 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
     this.onlyOneScrollInBody,
     this.scrollDirection,
   ) : super(state, parent, onHasScrolledBodyChanged, floatHeaderSlivers) {
-    final double initialScrollOffset = _parent?.initialScrollOffset ?? 0.0;
+    final initialScrollOffset = _parent?.initialScrollOffset ?? 0.0;
     _outerController = _NestedScrollControllerX(
       this,
       initialScrollOffset: initialScrollOffset,
@@ -159,13 +159,13 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
   @override
   Iterable<_NestedScrollPosition> get _innerPositions {
     if (_innerController.nestedPositions.length > 1 && onlyOneScrollInBody) {
-      final Iterable<_NestedScrollPosition> actived = _innerController
+      final actived = _innerController
           .nestedPositions
           .where((element) => (element as _NestedScrollPositionX).isActived);
       if (actived.isEmpty) {
-        for (final _NestedScrollPosition scrollPosition
+        for (final scrollPosition
             in _innerController.nestedPositions) {
-          final RenderObject? renderObject =
+          final renderObject =
               scrollPosition.context.storageContext.findRenderObject();
           if (renderObject == null || !renderObject.attached) {
             continue;
@@ -188,7 +188,7 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
     RenderObject parent,
     RenderObject renderObject,
   ) {
-    bool visible = false;
+    var visible = false;
 
     // The implementation has to return the children in paint order skipping all
     // children that are not semantically relevant (e.g. because they are
@@ -204,9 +204,9 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
   }
 
   bool renderObjectIsVisible(RenderObject renderObject, Axis axis) {
-    final RenderViewport? parent = findParentRenderViewport(renderObject);
+    final parent = findParentRenderViewport(renderObject);
     if (parent != null && parent.axis == axis) {
-      for (final RenderSliver childrenInPaint
+      for (final childrenInPaint
           in parent.childrenInHitTestOrder) {
         return childIsVisible(childrenInPaint, renderObject) &&
             renderObjectIsVisible(parent, axis);
@@ -235,7 +235,7 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
 
   @override
   void updateCanDrag({_NestedScrollPosition? position}) {
-    double maxInnerExtent = 0.0;
+    var maxInnerExtent = 0.0;
 
     if (onlyOneScrollInBody &&
         position != null &&
@@ -252,7 +252,7 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
       return;
     }
 
-    for (final _NestedScrollPosition position in _innerPositions) {
+    for (final position in _innerPositions) {
       if (!position.haveDimensions) {
         return;
       }
@@ -271,7 +271,7 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
     // 选出与当前滑动惯性反向的最远处的innerPosition（如果滑动惯性不为零）
     _NestedScrollPosition? innerPosition;
     if (userScrollDirection != ScrollDirection.idle) {
-      for (final _NestedScrollPosition position in _innerPositions) {
+      for (final position in _innerPositions) {
         if (innerPosition != null) {
           //上滑
           if (userScrollDirection == ScrollDirection.reverse) {
@@ -347,12 +347,12 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
       _outerPosition!.applyFullDragUpdate(delta);
     } else if (delta < 0.0) {
       //完整上滑量
-      double outerDelta = delta;
-      for (final _NestedScrollPosition position in _innerPositions) {
+      var outerDelta = delta;
+      for (final position in _innerPositions) {
         //下拉顶部状态的 inner overscroll
         if (position.pixels < position.minScrollExtent) {
           // 内部Clamp（回到顶部为止）消耗上滑
-          final double potentialOuterDelta =
+          final potentialOuterDelta =
               position.applyClampedDragUpdate(delta);
           // 内部只能消耗上滑量
           if (potentialOuterDelta < 0) {
@@ -362,28 +362,28 @@ class _NestedScrollCoordinatorX extends _NestedScrollCoordinator {
       }
       if (outerDelta != 0.0) {
         // 外部Clamp（到达底部为止）消耗上滑
-        final double innerDelta = _outerPosition!.applyClampedDragUpdate(
+        final innerDelta = _outerPosition!.applyClampedDragUpdate(
           outerDelta,
         );
         // 剩余上滑量由内部全量消耗
         if (innerDelta != 0.0) {
-          for (final _NestedScrollPosition position in _innerPositions)
+          for (final position in _innerPositions)
             position.applyFullDragUpdate(innerDelta);
         }
       }
     } else {
       //完整下滑量
-      double innerDelta = delta;
+      var innerDelta = delta;
       if (_floatHeaderSlivers) {
         //首先外部Clamp（到达顶部为止）消耗下滑
         innerDelta = _outerPosition!.applyClampedDragUpdate(delta);
       }
       //剩余下滑量（内部滑动到顶部）
       if (innerDelta != 0.0) {
-        double outerDelta = 0.0; // 应该为正值（外部只能消耗下滑量）
-        for (final _NestedScrollPosition position in _innerPositions) {
+        var outerDelta = 0.0; // 应该为正值（外部只能消耗下滑量）
+        for (final position in _innerPositions) {
           //内部Clamp（到达顶部为止）消耗下滑
-          final double overscroll = position.applyClampedDragUpdate(innerDelta);
+          final overscroll = position.applyClampedDragUpdate(innerDelta);
           if (overscroll > 0) {
             //外部只能消耗下滑量
             outerDelta = math.max(outerDelta, overscroll);

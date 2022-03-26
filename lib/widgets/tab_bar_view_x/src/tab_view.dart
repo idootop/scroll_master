@@ -9,9 +9,6 @@ import 'package:flutter/physics.dart';
 import 'page_view.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-
 part 'tab_scroll_view.dart';
 
 ///todo 快速结束滑动惯性，防止用户快速切换Tab时滚动不符合预期
@@ -475,7 +472,7 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
     _handleAncestorOrChild(details, _child);
 
     // TODO(zmtzawqlp): if there are two drag, how to do we do?
-    assert(!(_ancestor?._drag != null && _child?._drag != null));
+    if (_ancestor?._drag != null && _child?._drag != null) return;
     if (_ancestor?._drag != null) {
       _ancestor!._drag!.update(details);
     } else if (_child?._drag != null) {

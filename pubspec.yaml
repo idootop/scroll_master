@@ -10,6 +10,9 @@ dependencies:
     sdk: flutter
   pedantic: ^1.11.0
   oktoast: ^3.0.0
+  get: ^4.6.1
+  flutter_hooks: ^0.18.2+1
+
 
 dev_dependencies:
   flutter_test:
