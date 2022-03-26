@@ -124,7 +124,7 @@ class _VerticalScrollTabViewState extends State<VerticalScrollTabView> {
               child: Column(
                 children: [
                   Expanded(
-                    child: Image.network(
+                    child: Image.asset(
                       ius[tabIdx],
                       width: screen.width,
                       fit: BoxFit.cover,

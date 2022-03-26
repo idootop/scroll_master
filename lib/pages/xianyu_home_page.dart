@@ -72,6 +72,7 @@ class RefreshContoller extends GetxController {
 
   Future<void> handlePointerEvent(PointerEvent event) async {
     if (event is PointerUpEvent || event is PointerCancelEvent) {
+      print('cancel');
       if (_status == RefreshStatus.release2refresh) {
         // 在释放刷新阶段放手，则刷新
         status = RefreshStatus.refreshing;
@@ -167,14 +168,23 @@ class XianyuHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final controller = useScrollController();
+    final controller2 = useScrollController();
     useEffect(() {
-      final refreshContoller = RefreshContoller(refreshCallback: refresh)
+      if (!Get.isRegistered<RefreshContoller>()) {
+        Get.put(RefreshContoller());
+      }
+      final refreshContoller = RefreshContoller.to
+        ..refreshCallback = refresh
         ..innerTabBarHeight = innerTabBar.preferredSize.height
         ..outerTabBarHeight = outerTabBar.preferredSize.height;
-      Get.put(refreshContoller);
       controller.addListener(() {
         // 关键，监听 NestedScrollViewX 过度滑动距离
         final overflow = (0 - controller.offset).clamp(0, double.infinity);
+        refreshContoller.refreshTriger(overflow);
+      });
+      controller2.addListener(() {
+        // 关键，监听 NestedScrollViewX 过度滑动距离
+        final overflow = (0 - controller2.offset).clamp(0, double.infinity);
         refreshContoller.refreshTriger(overflow);
       });
       // 全局手势监听
@@ -205,7 +215,7 @@ class XianyuHomePage extends HookWidget {
                     height: MediaQuery.of(context).size.height,
                     child: ExtendedTabBarView(children: [
                       AliveKeeper(child: nestedScrollViewTab(controller)),
-                      AliveKeeper(child: blankTab()),
+                      AliveKeeper(child: blankTab(context, controller2)),
                     ]),
                   ),
                 ],
@@ -249,8 +259,24 @@ class XianyuHomePage extends HookWidget {
   Widget tabBar(text) =>
       Container(height: 48 - 2, alignment: Alignment.center, child: Text(text));
 
-  Widget blankTab() => Center(
-        child: Text('关注'),
+  Widget blankTab(context, controller2) => SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: ListView(
+          controller: controller2,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Center(
+                child: Text('关注'),
+              ),
+            )
+          ],
+        ),
       );
 
   Widget nestedScrollViewTab(controller) => DefaultTabController(

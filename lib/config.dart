@@ -4,12 +4,12 @@ import 'dart:math';
 const projectName = 'ScrollMaster';
 
 ///IU's image url ^_^
-String get iu => ius[Random().nextInt(ius.length)];
+String get iu =>  ius[Random().nextInt(ius.length)];
 
 const ius = [
-  'https://i.loli.net/2021/08/30/yqukHcEzsWfgoep.jpg',
-  'https://i.loli.net/2021/08/30/TjZCqBhKx47wrzD.png',
-  'https://i.loli.net/2021/08/30/zyMqEZYsktWRuO1.jpg',
-  'https://i.loli.net/2021/08/30/3HNEheyqY4RBSOc.jpg',
-  'https://i.loli.net/2021/08/30/dF6cta24ZNHTRJl.jpg',
+  'assets/1.jpg',
+  'assets/2.png',
+  'assets/3.jpg',
+  'assets/4.jpg',
+  'assets/5.jpg',
 ];

@@ -48,7 +48,7 @@ class NestedScrollTabListPage extends StatelessWidget {
                     StretchMode.zoomBackground,
                     StretchMode.blurBackground,
                   ],
-                  background: Image.network(
+                  background: Image.asset(
                     ius[1],
                     fit: BoxFit.cover,
                   ),

@@ -118,7 +118,7 @@ class _HorizontalScrollTabViewState extends State<HorizontalScrollTabView> {
               child: Column(
                 children: [
                   Expanded(
-                    child: Image.network(
+                    child: Image.asset(
                       ius[tabIdx],
                       width: screen.width,
                       fit: BoxFit.cover,
