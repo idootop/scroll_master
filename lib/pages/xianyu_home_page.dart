@@ -186,48 +186,45 @@ class XianyuHomePage extends HookWidget {
       };
     });
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      child: SafeArea(
-        top: true,
-        child: DefaultTabController(
-          length: 2,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // 用一个隐藏的 refreshIndicator 撑开高度
-                    Opacity(opacity: 0, child: refreshIndicator()),
-                    SizedBox(height: outerTabBar.preferredSize.height),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      child: ExtendedTabBarView(children: [
-                        AliveKeeper(child: nestedScrollViewTab(controller)),
-                        AliveKeeper(child: blankTab()),
-                      ]),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
+    return SafeArea(
+      top: true,
+      child: DefaultTabController(
+        length: 2,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 同步过度滑动距离
-                  GetBuilder<RefreshContoller>(
-                    builder: (state) => SizedBox(
-                      height: state._overscroll.clamp(0, double.infinity),
-                    ),
+                  // 用一个隐藏的 refreshIndicator 撑开高度
+                  Opacity(opacity: 0, child: refreshIndicator()),
+                  SizedBox(height: outerTabBar.preferredSize.height),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: ExtendedTabBarView(children: [
+                      AliveKeeper(child: nestedScrollViewTab(controller)),
+                      AliveKeeper(child: blankTab()),
+                    ]),
                   ),
-                  refreshIndicator(),
-                  outerTabBar,
                 ],
               ),
-            ],
-          ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 同步过度滑动距离
+                GetBuilder<RefreshContoller>(
+                  builder: (state) => SizedBox(
+                    height: state._overscroll.clamp(0, double.infinity),
+                  ),
+                ),
+                refreshIndicator(),
+                outerTabBar,
+              ],
+            ),
+          ],
         ),
       ),
     );
