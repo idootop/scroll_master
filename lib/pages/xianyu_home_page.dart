@@ -1,9 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:scroll_master/config.dart';
 import 'package:scroll_master/util.dart';
 import 'package:scroll_master/widgets/alive_keeper.dart';
-import 'package:scroll_master/widgets/custom_nested_scroll_view/custom_nested_scroll_view.dart';
+import 'package:custom_nested_scroll_view/custom_nested_scroll_view.dart';
 import 'package:scroll_master/widgets/l_sliver_app_bar.dart';
 
 import '../widgets/tab_bar_view_x/extended_tabs.dart';
@@ -126,40 +127,39 @@ class XianyuHomePage extends HookWidget {
   }
 
   Widget header() {
-    return GetBuilder<RefreshContoller>(
-      builder: (state) => LSliverAppBar(
-        pinned: true,
-        stretch: true,
-        minHeight: state.innerTabBarHeight,
-        maxHeight: state.innerTabBarHeight + state.headerHeight,
-        backgroundColor: Colors.transparent,
-        backgroundBuilder: (
-          BuildContext context,
-          double minHeight,
-          double maxHeight,
-          double currentHeight,
-        ) {
-          return SizedBox(
-            height: currentHeight,
-            child: Column(
-              children: [
-                Expanded(child: Container()),
-                Container(
-                  height: state.headerHeight,
-                  color: Colors.white,
-                  child: Center(
-                    child: Text('发现'),
-                  ),
+    final state = RefreshContoller.to;
+    return LSliverAppBar(
+      pinned: true,
+      stretch: true,
+      minHeight: state.innerTabBarHeight,
+      maxHeight: state.innerTabBarHeight + state.headerHeight,
+      backgroundColor: Colors.transparent,
+      backgroundBuilder: (
+        BuildContext context,
+        double minHeight,
+        double maxHeight,
+        double currentHeight,
+      ) {
+        return SizedBox(
+          height: currentHeight,
+          child: Column(
+            children: [
+              Expanded(child: Container()),
+              Container(
+                height: state.headerHeight,
+                color: Colors.white,
+                child: Center(
+                  child: Text('发现'),
                 ),
-                SizedBox(height: state.innerTabBarHeight)
-              ],
-            ),
-          );
-        },
-        bottom: PreferredSize(
-          preferredSize: Size(Get.width, innerTabBar.preferredSize.height),
-          child: Container(color: Colors.lightBlueAccent, child: innerTabBar),
-        ),
+              ),
+              SizedBox(height: state.innerTabBarHeight)
+            ],
+          ),
+        );
+      },
+      bottom: PreferredSize(
+        preferredSize: Size(Get.width, innerTabBar.preferredSize.height),
+        child: Container(color: Colors.lightBlueAccent, child: innerTabBar),
       ),
     );
   }
@@ -296,42 +296,40 @@ class XianyuHomePage extends HookWidget {
             ),
           ],
           body: ExtendedTabBarView(children: [
-            AliveKeeper(child: _tabView()),
-            AliveKeeper(child: _tabView(true)),
+            _tabView(),
+            _tabView(true),
           ]),
         ),
       );
 }
 
-Widget _tabView([bool reverse = false]) => Builder(builder: (context) {
-      return CustomScrollView(
-        key: PageStorageKey<String>('$reverse'),
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
+Widget _tabView([bool reverse = false]) => CustomScrollView(
+      key: PageStorageKey<String>('$reverse'),
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      slivers: <Widget>[
+        Builder(
+          builder: (context) => CustomSliverOverlapInjector(
+            overscrollType: CustomOverscroll.outer,
+            handle:
+                CustomNestedScrollView.sliverOverlapAbsorberHandleFor(context),
+          ),
         ),
-        slivers: <Widget>[
-          Builder(
-            builder: (context) => CustomSliverOverlapInjector(
-              overscrollType: CustomOverscroll.outer,
-              handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
-                  context),
-            ),
+        ...List.generate(
+          20,
+          (idx) => _tile(
+            reverse ? 20 - idx : idx + 1,
+            const [
+              Colors.yellow,
+              Colors.black,
+              Colors.blue,
+              Colors.purple,
+            ][idx % 4],
           ),
-          ...List.generate(
-            20,
-            (idx) => _tile(
-              reverse ? 20 - idx : idx + 1,
-              const [
-                Colors.yellow,
-                Colors.black,
-                Colors.blue,
-                Colors.purple,
-              ][idx % 4],
-            ),
-          ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
 
 Widget _tile(int idx, Color color) => SliverToBoxAdapter(
       key: Key('$idx'),

@@ -1,6 +1,6 @@
+import 'package:custom_nested_scroll_view/custom_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:scroll_master/util.dart';
-import 'package:scroll_master/widgets/custom_nested_scroll_view/custom_nested_scroll_view.dart';
 import '../config.dart';
 
 import '../widgets/tab_bar_view_x/extended_tabs.dart';
@@ -68,34 +68,32 @@ class NestedScrollTabListPage extends StatelessWidget {
         ));
   }
 
-  Widget _tabView([bool reverse = false]) => Builder(
-        builder: (context) => CustomScrollView(
-          key: PageStorageKey<String>('$reverse'),
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          slivers: [
-            Builder(
-              builder: (context) => CustomSliverOverlapInjector(
-                overscrollType: CustomOverscroll.outer,
-                handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
-                    context),
-              ),
-            ),
-            ...List.generate(
-              20,
-              (idx) => _tile(
-                reverse ? 20 - idx : idx + 1,
-                const [
-                  Colors.yellow,
-                  Colors.black,
-                  Colors.blue,
-                  Colors.purple,
-                ][idx % 4],
-              ),
-            ),
-          ],
+  Widget _tabView([bool reverse = false]) => CustomScrollView(
+        key: PageStorageKey<String>('$reverse'),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
         ),
+        slivers: [
+          Builder(
+            builder: (context) => CustomSliverOverlapInjector(
+              overscrollType: CustomOverscroll.outer,
+              handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
+                  context),
+            ),
+          ),
+          ...List.generate(
+            20,
+            (idx) => _tile(
+              reverse ? 20 - idx : idx + 1,
+              const [
+                Colors.yellow,
+                Colors.black,
+                Colors.blue,
+                Colors.purple,
+              ][idx % 4],
+            ),
+          ),
+        ],
       );
 
   Widget _tile(int idx, Color color) => SliverToBoxAdapter(
