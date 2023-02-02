@@ -6,7 +6,7 @@ An example showing how to handle common scrolling gesture conflicts in Flutter.
 
 ## 🌍 Preview
 
-Web demo 👉   [Click Here](https://killer-1255480117.cos.ap-chongqing.myqcloud.com/web/scrollMaster/index.html)
+Web demo 👉   [Click Here](https://scroll.xbox.work)
 
 ## 🐛 Problems
 
