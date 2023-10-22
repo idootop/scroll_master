@@ -1,7 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'tab_bar.dart';
 
 class CarouselIndicator extends StatelessWidget {
@@ -48,10 +46,10 @@ class CarouselIndicator extends StatelessWidget {
       }
       return true;
     }());
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
-    final Color selectedColor =
+    final tabBarTheme = TabBarTheme.of(context);
+    final selectedColor =
         this.selectedColor ?? Theme.of(context).indicatorColor;
-    final Color unselectedColor = this.unselectedColor ??
+    final unselectedColor = this.unselectedColor ??
         tabBarTheme.unselectedLabelColor ??
         selectedColor.withOpacity(0.3);
     return IntrinsicWidth(
@@ -125,7 +123,7 @@ class _UnSelectedIndicatorPainter extends CustomPainter {
   final StrokeCap strokeCap;
   @override
   void paint(Canvas canvas, Size size) {
-    final Rect rect = Offset.zero & size;
+    final rect = Offset.zero & size;
     canvas.drawLine(
       rect.bottomLeft,
       rect.bottomRight,
@@ -204,7 +202,7 @@ class _UnderlineTabIndicator extends Decoration {
   }
 
   Rect _indicatorRectFor(Rect rect, TextDirection textDirection) {
-    final Rect indicator = insets.resolve(textDirection).deflateRect(rect);
+    final indicator = insets.resolve(textDirection).deflateRect(rect);
     return Rect.fromLTWH(
       indicator.left,
       indicator.top,
@@ -228,10 +226,10 @@ class _UnderlinePainter extends BoxPainter {
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
     assert(configuration.size != null);
-    final Rect rect = offset & configuration.size!;
-    final TextDirection textDirection = configuration.textDirection!;
-    final Rect indicator = decoration._indicatorRectFor(rect, textDirection);
-    final Paint paint = decoration.borderSide.toPaint()
+    final rect = offset & configuration.size!;
+    final textDirection = configuration.textDirection!;
+    final indicator = decoration._indicatorRectFor(rect, textDirection);
+    final paint = decoration.borderSide.toPaint()
       ..strokeCap = decoration.strokeCap;
     canvas.drawLine(indicator.bottomLeft, indicator.bottomRight, paint);
   }

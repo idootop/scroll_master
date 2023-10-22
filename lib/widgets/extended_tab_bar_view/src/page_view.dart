@@ -208,8 +208,8 @@ class _ExtendedPageViewState extends State<ExtendedPageView> {
     switch (widget.scrollDirection) {
       case Axis.horizontal:
         assert(debugCheckHasDirectionality(context));
-        final TextDirection textDirection = Directionality.of(context);
-        final AxisDirection axisDirection =
+        final textDirection = Directionality.of(context);
+        final axisDirection =
             textDirectionToAxisDirection(textDirection);
         return widget.reverse
             ? flipAxisDirection(axisDirection)
@@ -221,7 +221,7 @@ class _ExtendedPageViewState extends State<ExtendedPageView> {
 
   @override
   Widget build(BuildContext context) {
-    final AxisDirection axisDirection = _getDirection(context);
+    final axisDirection = _getDirection(context);
     final ScrollPhysics physics = _ForceImplicitScrollPhysics(
       allowImplicitScrolling: widget.allowImplicitScrolling,
     ).applyTo(widget.pageSnapping
@@ -233,8 +233,8 @@ class _ExtendedPageViewState extends State<ExtendedPageView> {
         if (notification.depth == 0 &&
             widget.onPageChanged != null &&
             notification is ScrollUpdateNotification) {
-          final PageMetrics metrics = notification.metrics as PageMetrics;
-          final int currentPage = metrics.page!.round();
+          final metrics = notification.metrics as PageMetrics;
+          final currentPage = metrics.page!.round();
           if (currentPage != _lastReportedPage) {
             _lastReportedPage = currentPage;
             widget.onPageChanged!(currentPage);
@@ -252,7 +252,7 @@ class _ExtendedPageViewState extends State<ExtendedPageView> {
           if (widget.cacheExtent > 0) {
             return LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints boxConstraints) {
-              final Axis axis = axisDirectionToAxis(axisDirection);
+              final axis = axisDirectionToAxis(axisDirection);
               return _createViewport(
                 axisDirection,
                 position,

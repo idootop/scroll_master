@@ -229,7 +229,7 @@ class _LFlexibleSpaceBarState extends State<LFlexibleSpaceBar> {
 
           final opacity = settings.toolbarOpacity;
           if (opacity > 0.0) {
-            var titleStyle = theme.primaryTextTheme.headline6!;
+            var titleStyle = theme.primaryTextTheme.titleLarge!;
             titleStyle = titleStyle.copyWith(
               color: titleStyle.color!.withOpacity(opacity),
             );

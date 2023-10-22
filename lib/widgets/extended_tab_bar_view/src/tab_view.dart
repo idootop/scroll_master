@@ -4,29 +4,10 @@
 
 import 'dart:async';
 
-import 'package:flutter/physics.dart';
-
 import 'page_view.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 part 'tab_scroll_view.dart';
-
-///todo 快速结束滑动惯性，防止用户快速切换Tab时滚动不符合预期
-class FastScrollPhysics extends ClampingScrollPhysics {
-  const FastScrollPhysics({ScrollPhysics? parent}) : super(parent: parent);
-
-  @override
-  FastScrollPhysics applyTo(ScrollPhysics? ancestor) {
-    return FastScrollPhysics(parent: buildParent(ancestor));
-  }
-
-  @override
-  SpringDescription get spring => SpringDescription.withDampingRatio(
-        mass: 0.5, //质量
-        stiffness: 10000.0, //刚性
-        ratio: 2, //阻尼
-      );
-}
 
 const ScrollPhysics _defaultScrollPhysics = NeverScrollableScrollPhysics();
 
@@ -37,7 +18,24 @@ final PageMetrics _testPageMetrics = PageMetrics(
   pixels: 5,
   viewportDimension: 10,
   viewportFraction: 1.0,
+  devicePixelRatio: 1,
 );
+
+class FastScrollPhysics extends ClampingScrollPhysics {
+  const FastScrollPhysics({ScrollPhysics? parent}) : super(parent: parent);
+
+  @override
+  FastScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return FastScrollPhysics(parent: buildParent(ancestor));
+  }
+
+  @override
+  SpringDescription get spring => SpringDescription.withDampingRatio(
+        mass: 0.5,
+        stiffness: 10000.0,
+        ratio: 2,
+      );
+}
 
 /// A page view that displays the widget which corresponds to the currently
 /// selected tab.
@@ -150,11 +148,13 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
       return;
     }
 
-    if (_controllerIsValid)
+    if (_controllerIsValid) {
       _controller!.animation!.removeListener(_handleTabControllerAnimationTick);
+    }
     _controller = newController;
-    if (_controller != null)
+    if (_controller != null) {
       _controller!.animation!.addListener(_handleTabControllerAnimationTick);
+    }
   }
 
   void _updatePhysics() {
@@ -183,7 +183,7 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
     _updateAncestor();
     _updateTabController();
     _currentIndex = _controller?.index;
-    final int currentIndex = _currentIndex ?? 0;
+    final currentIndex = _currentIndex ?? 0;
     _pageController =
         widget.pageController ?? PageController(initialPage: currentIndex);
     assert(currentIndex == _pageController!.initialPage);
@@ -212,16 +212,18 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
     if (widget.physics != oldWidget.physics) {
       _updatePhysics();
     }
-    if (widget.children != oldWidget.children && _warpUnderwayCount == 0)
+    if (widget.children != oldWidget.children && _warpUnderwayCount == 0) {
       _updateChildren();
+    }
 
     _initGestureRecognizers(oldWidget);
   }
 
   @override
   void dispose() {
-    if (_controllerIsValid)
+    if (_controllerIsValid) {
       _controller!.animation!.removeListener(_handleTabControllerAnimationTick);
+    }
     _controller = null;
     // We don't own the _controller Animation, so it's not disposed here.
     super.dispose();
@@ -233,8 +235,9 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
   }
 
   void _handleTabControllerAnimationTick() {
-    if (_warpUnderwayCount > 0 || !_controller!.indexIsChanging)
+    if (_warpUnderwayCount > 0 || !_controller!.indexIsChanging) {
       return; // This widget is driving the controller's animation.
+    }
 
     if (_controller!.index != _currentIndex) {
       _currentIndex = _controller!.index;
@@ -247,10 +250,11 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
       return Future<void>.value();
     }
 
-    if (_pageController!.page == _currentIndex!.toDouble())
+    if (_pageController!.page == _currentIndex!.toDouble()) {
       return Future<void>.value();
+    }
 
-    final int previousIndex = _controller!.previousIndex;
+    final previousIndex = _controller!.previousIndex;
     if ((_currentIndex! - previousIndex).abs() == 1) {
       _warpUnderwayCount += 1;
       await _pageController!.animateToPage(_currentIndex!,
@@ -260,15 +264,15 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
     }
 
     assert((_currentIndex! - previousIndex).abs() > 1);
-    final int initialPage = _currentIndex! > previousIndex
+    final initialPage = _currentIndex! > previousIndex
         ? _currentIndex! - 1
         : _currentIndex! + 1;
-    final List<Widget>? originalChildren = _childrenWithKey;
+    final originalChildren = _childrenWithKey;
     setState(() {
       _warpUnderwayCount += 1;
 
       _childrenWithKey = List<Widget>.from(_childrenWithKey!, growable: false);
-      final Widget temp = _childrenWithKey![initialPage];
+      final temp = _childrenWithKey![initialPage];
       _childrenWithKey![initialPage] = _childrenWithKey![previousIndex];
       _childrenWithKey![previousIndex] = temp;
     });
@@ -324,7 +328,7 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
     if (notification.depth == 0 &&
         (_disallowGlow(notification.leading, _ancestor) ||
             _disallowGlow(notification.leading, _child))) {
-      notification.disallowGlow();
+      notification.disallowIndicator();
       return true;
     }
     return false;
@@ -485,7 +489,7 @@ class _ExtendedTabBarViewState extends State<ExtendedTabBarView> {
   bool _handleAncestorOrChild(
       DragUpdateDetails details, _ExtendedTabBarViewState? state) {
     if (state?._position != null) {
-      final double delta = widget.scrollDirection == Axis.horizontal
+      final delta = widget.scrollDirection == Axis.horizontal
           ? details.delta.dx
           : details.delta.dy;
 

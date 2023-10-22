@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:scroll_master/util.dart';
 
 import '../config.dart';
-import '../widgets/tab_bar_view_x/extended_tabs.dart';
+import '../widgets/extended_tab_bar_view/extended_tabs.dart';
 
 class HorizontalScrollTabListPage extends StatefulWidget {
   const HorizontalScrollTabListPage({Key? key}) : super(key: key);
@@ -101,38 +100,34 @@ class _HorizontalScrollTabViewState extends State<HorizontalScrollTabView> {
     final screen = MediaQuery.of(context).size;
     final tabIdx = int.parse(widget.text.replaceAll('Tab', '')) - 1;
     return ListView.builder(
-      // 必须为NeverScrollableScrollPhysics，由外部TabScrollView更新positon
       physics: NeverScrollableScrollPhysics(),
       itemCount: 3,
       controller: controller,
       scrollDirection: Axis.horizontal,
       key: PageStorageKey<String>('H' + widget.text),
       itemBuilder: (_, idx) {
-        return GestureDetector(
-          onTap: () => showToast(),
+        return Container(
+          width: screen.width,
+          padding: EdgeInsets.all(screen.width / 10),
           child: Container(
-            width: screen.width,
-            padding: EdgeInsets.all(screen.width / 10),
-            child: Container(
-              color: Colors.blue,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Image.asset(
-                      ius[tabIdx],
-                      width: screen.width,
-                      fit: BoxFit.cover,
-                    ),
+            color: Colors.blue,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Image.asset(
+                    ius[tabIdx],
+                    width: screen.width,
+                    fit: BoxFit.cover,
                   ),
-                  Container(
-                    padding: EdgeInsets.all(screen.width / 10),
-                    child: Text(
-                      widget.text + ' - ${idx + 1}',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(screen.width / 10),
+                  child: Text(
+                    widget.text + ' - ${idx + 1}',
+                    style: TextStyle(color: Colors.white),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );

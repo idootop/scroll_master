@@ -1,9 +1,8 @@
-import 'package:custom_nested_scroll_view/custom_nested_scroll_view.dart';
+import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:scroll_master/util.dart';
 import '../config.dart';
 
-import '../widgets/tab_bar_view_x/extended_tabs.dart';
+import '../widgets/extended_tab_bar_view/extended_tabs.dart';
 
 class NestedScrollTabListPage extends StatelessWidget {
   const NestedScrollTabListPage({Key? key}) : super(key: key);
@@ -23,15 +22,9 @@ class NestedScrollTabListPage extends StatelessWidget {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
-          body: CustomNestedScrollView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
+          body: NestedScrollViewPlus(
             headerSliverBuilder: (context, innerScrolled) => <Widget>[
-              CustomSliverOverlapAbsorber(
-                overscrollType: CustomOverscroll.outer,
-                handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
-                    context),
+              OverlapAbsorberPlus(
                 sliver: SliverAppBar(
                   pinned: true,
                   stretch: true,
@@ -74,13 +67,7 @@ class NestedScrollTabListPage extends StatelessWidget {
           parent: AlwaysScrollableScrollPhysics(),
         ),
         slivers: [
-          Builder(
-            builder: (context) => CustomSliverOverlapInjector(
-              overscrollType: CustomOverscroll.outer,
-              handle: CustomNestedScrollView.sliverOverlapAbsorberHandleFor(
-                  context),
-            ),
-          ),
+          OverlapInjectorPlus(),
           ...List.generate(
             20,
             (idx) => _tile(
@@ -98,19 +85,16 @@ class NestedScrollTabListPage extends StatelessWidget {
 
   Widget _tile(int idx, Color color) => SliverToBoxAdapter(
         key: Key('$idx'),
-        child: GestureDetector(
-          onTap: () => showToast(),
-          child: Container(
-            height: 64,
-            color: color,
-            child: Center(
-              child: Text(
-                '$idx',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
+        child: Container(
+          height: 64,
+          color: color,
+          child: Center(
+            child: Text(
+              '$idx',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
               ),
             ),
           ),

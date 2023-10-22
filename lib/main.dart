@@ -1,87 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:scroll_master/pages/xianyu_home_page.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:get/get.dart';
+import 'package:scroll_master/pages/home_page.dart';
 import 'pages/horizontal_scroll_tab_list_page.dart';
 import 'pages/nested_scroll_tab_list_page.dart';
 import 'pages/vertical_scroll_tab_list_page.dart';
 
 import 'widgets/alive_keeper.dart';
-import 'widgets/tab_bar_view_x/src/tab_view.dart';
+import 'widgets/extended_tab_bar_view/src/tab_view.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MaterialApp(
+      theme: ThemeData.light(useMaterial3: true).copyWith(
+        primaryColor: Colors.black,
+        tabBarTheme: const TabBarTheme(
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          selectedItemColor: Colors.black,
+        ),
+      ),
+      home: const ScrollMaster(),
+    ));
 
-class MyApp extends StatelessWidget {
+class ScrollMaster extends HookWidget {
+  const ScrollMaster({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return OKToast(
-      movingOnWindowChange: false,
-      child: MaterialApp(
-        title: 'ScrollMaster',
-        home: Home(),
-      ),
-    );
-  }
-}
-
-class Home extends StatefulWidget {
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      initialIndex: _currentPage,
-      length: 4,
-      vsync: this,
-    )..addListener(() {
-        if (!_tabController.indexIsChanging &&
-            _tabController.index != _currentPage) {
-          _onPageChanged(_tabController.index);
+    final tabController = useTabController(initialLength: 4);
+    final currentPage = useState(0);
+    final onPageChanged = useCallback((int idx) {
+      if (idx != currentPage.value) {
+        currentPage.value = idx;
+        tabController.animateTo(idx);
+      }
+    });
+    useEffect(() {
+      tabController.addListener(() {
+        if (!tabController.indexIsChanging &&
+            tabController.index != currentPage.value) {
+          onPageChanged(tabController.index);
         }
       });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  void _onPageChanged(int idx) {
-    if (idx != _currentPage) {
-      setState(() {
-        _currentPage = idx;
-        _tabController.animateTo(_currentPage);
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    }, []);
     return Scaffold(
       body: ExtendedTabBarView(
-        physics: ClampingScrollPhysics(),
-        controller: _tabController,
+        controller: tabController,
         children: [
-          XianyuHomePage(),
-          HorizontalScrollTabListPage(),
-          VerticalScrollTabListPage(),
-          NestedScrollTabListPage(),
+          const HomePage(),
+          const HorizontalScrollTabListPage(),
+          const VerticalScrollTabListPage(),
+          const NestedScrollTabListPage(),
         ].map<Widget>((e) => AliveKeeper(child: e)).toList(),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentPage.value,
+        onTap: onPageChanged,
         type: BottomNavigationBarType.fixed,
-        currentIndex: _currentPage,
-        onTap: _onPageChanged,
         items: [
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             label: 'Home',
             icon: Icon(Icons.home),
           ),
@@ -89,14 +68,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             label: 'Horizontal',
             icon: Transform.rotate(
               angle: 3.14 / 2,
-              child: Icon(Icons.unfold_more),
+              child: const Icon(Icons.unfold_more),
             ),
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             label: 'Vertical',
             icon: Icon(Icons.unfold_more),
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             label: 'Nested',
             icon: Icon(Icons.unfold_less),
           ),

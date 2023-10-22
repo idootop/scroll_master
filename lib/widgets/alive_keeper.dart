@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-/// 页面保活，可确保子组件在切换tab时保持活性
 class AliveKeeper extends StatefulWidget {
   final Widget child;
 

@@ -37,7 +37,7 @@ class _TabScrollViewState extends State<TabScrollView> {
               'offset': _controller.offset,
               'position': _controller.position,
             }))) {
-      notification.disallowGlow();
+      notification.disallowIndicator();
       return true;
     }
     return false;
@@ -64,8 +64,6 @@ class _TabScrollViewState extends State<TabScrollView> {
         : widget.child;
   }
 
-  // todo 代理Listview，同步_physics
-  ScrollPhysics? _physics;
   _ExtendedTabBarViewState? _ancestor;
   late bool _canDrag;
 
@@ -93,9 +91,6 @@ class _TabScrollViewState extends State<TabScrollView> {
   }
 
   void _updatePhysics() {
-    _physics = _defaultScrollPhysics.applyTo(widget.physics == null
-        ? const PageScrollPhysics().applyTo(const ClampingScrollPhysics())
-        : const PageScrollPhysics().applyTo(widget.physics));
 
     if (widget.physics == null) {
       _canDrag = true;
@@ -195,7 +190,6 @@ class _TabScrollViewState extends State<TabScrollView> {
     assert(_hold == null || _drag == null);
     _handleAncestor(details, _ancestor);
 
-    //更新滑动值
     if (_ancestor?._drag != null) {
       _ancestor!._drag!.update(details);
     } else {
@@ -228,8 +222,6 @@ class _TabScrollViewState extends State<TabScrollView> {
     return null;
   }
 
-  ///todo Drag事件对滑动中的Tab反向滚动进度无能为力，需要由更底层的scroll position去处理
-  ///todo 我们希望在切换外部Tab时，如果又在TabView产生滑动手势，如果此时内部tabview可以滚动，我们希望内部/外部tab都不响应这个事件，直到外部tab切换完毕
   bool _handleAncestor(
       DragUpdateDetails details, _ExtendedTabBarViewState? state) {
     if (state?._position != null) {
@@ -237,7 +229,6 @@ class _TabScrollViewState extends State<TabScrollView> {
           ? details.delta.dx
           : details.delta.dy;
 
-      //当前过滑
       if ((delta < 0 &&
               _position?.extentAfter == 0 &&
               _ancestorCanDrag(details, state) != null) ||
