@@ -1,103 +1,123 @@
+// ignore_for_file: avoid_print
+
 import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
 import 'package:flutter/material.dart';
-import '../config.dart';
 
-import '../widgets/extended_tab_bar_view/extended_tabs.dart';
-
-class NestedScrollTabListPage extends StatelessWidget {
-  const NestedScrollTabListPage({Key? key}) : super(key: key);
-
-  ///Header collapsed height
-  final minHeight = 120.0;
-
-  ///Header expanded height
-  final maxHeight = 400.0;
+class NestedScrollTabListPage extends StatefulWidget {
+  const NestedScrollTabListPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final tabBar = TabBar(
-      tabs: <Widget>[Text('Tab1'), Text('Tab2')],
-    );
-    final topHeight = MediaQuery.of(context).padding.top;
-    return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          body: NestedScrollViewPlus(
-            headerSliverBuilder: (context, innerScrolled) => <Widget>[
-              OverlapAbsorberPlus(
-                sliver: SliverAppBar(
-                  pinned: true,
-                  stretch: true,
-                  toolbarHeight:
-                      minHeight - tabBar.preferredSize.height - topHeight,
-                  collapsedHeight:
-                      minHeight - tabBar.preferredSize.height - topHeight,
-                  expandedHeight:
-                      maxHeight - tabBar.preferredSize.height - topHeight,
-                  flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    title: Container(
-                      alignment: Alignment.center,
-                      child: Text(projectName),
-                    ),
-                    stretchModes: <StretchMode>[
-                      StretchMode.zoomBackground,
-                      StretchMode.blurBackground,
-                    ],
-                    background: Image.asset(
-                      ius[1],
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  bottom: tabBar,
-                ),
-              ),
-            ],
-            body: ExtendedTabBarView(children: [
-              _tabView(),
-              _tabView(true),
-            ]),
-          ),
-        ));
-  }
+  State<NestedScrollTabListPage> createState() =>
+      _NestedScrollTabListPageState();
+}
 
+class _NestedScrollTabListPageState extends State<NestedScrollTabListPage> {
   Widget _tabView([bool reverse = false]) => CustomScrollView(
         key: PageStorageKey<String>('$reverse'),
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),
-        slivers: [
-          OverlapInjectorPlus(),
-          ...List.generate(
-            20,
-            (idx) => _tile(
-              reverse ? 20 - idx : idx + 1,
-              const [
-                Colors.yellow,
-                Colors.black,
-                Colors.blue,
-                Colors.purple,
-              ][idx % 4],
+        slivers: <Widget>[
+          const OverlapInjectorPlus(),
+          SliverFixedExtentList(
+            delegate: SliverChildBuilderDelegate(
+              (_, index) => Container(
+                key: Key('$reverse-$index'),
+                color: index.isEven ? Colors.white : Colors.grey[100],
+                child: Center(
+                  child: Text('ListTile ${reverse ? 30 - index : index + 1}'),
+                ),
+              ),
+              childCount: 30,
             ),
+            itemExtent: 60,
           ),
         ],
       );
 
-  Widget _tile(int idx, Color color) => SliverToBoxAdapter(
-        key: Key('$idx'),
-        child: Container(
-          height: 64,
-          color: color,
-          child: Center(
-            child: Text(
-              '$idx',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: NestedScrollViewPlus(
+        // use key to access NestedScrollViewStatePlus
+        key: myKey,
+        headerSliverBuilder: (context, innerScrolled) => <Widget>[
+          // use OverlapAbsorberPlus to wrap your SliverAppBar
+          const OverlapAbsorberPlus(
+            sliver: MySliverAppBar(),
           ),
+        ],
+        body: TabBarView(
+          children: [
+            _tabView(),
+            _tabView(true),
+          ],
         ),
-      );
+      ),
+    );
+  }
+
+  final GlobalKey<NestedScrollViewStatePlus> myKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // use GlobalKey<NestedScrollViewStatePlus> to access inner or outer scroll controller
+      myKey.currentState?.innerController.addListener(() {
+        final innerController = myKey.currentState!.innerController;
+        if (innerController.positions.length == 1) {
+          print('Scrolling inner nested scrollview: ${innerController.offset}');
+        }
+      });
+      myKey.currentState?.outerController.addListener(() {
+        final outerController = myKey.currentState!.outerController;
+        if (outerController.positions.length == 1) {
+          print('Scrolling outer nested scrollview: ${outerController.offset}');
+        }
+      });
+    });
+  }
+}
+
+class MySliverAppBar extends StatelessWidget {
+  ///Header collapsed height
+  final minHeight = 60.0;
+
+  ///Header expanded height
+  final maxHeight = 320.0;
+
+  final tabBar = const TabBar(
+    labelPadding: EdgeInsets.all(16),
+    tabs: <Widget>[Text('Tab1'), Text('Tab2')],
+  );
+
+  const MySliverAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+    final bottomHeight = tabBar.preferredSize.height;
+    return SliverAppBar(
+      pinned: true,
+      stretch: true,
+      toolbarHeight: minHeight - bottomHeight - topPadding,
+      collapsedHeight: minHeight - bottomHeight - topPadding,
+      expandedHeight: maxHeight - topPadding,
+      titleSpacing: 0,
+      flexibleSpace: FlexibleSpaceBar(
+        stretchModes: const <StretchMode>[
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground,
+        ],
+        background: Image.network(
+          'https://pic1.zhimg.com/80/v2-fc35089cfe6c50f97324c98f963930c9_720w.jpg',
+          fit: BoxFit.cover,
+          alignment: const Alignment(0.0, 0.4),
+        ),
+      ),
+      bottom: tabBar,
+    );
+  }
 }

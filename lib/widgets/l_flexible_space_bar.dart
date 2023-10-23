@@ -7,14 +7,14 @@ class LFlexibleSpaceBar extends StatefulWidget {
   ///
   /// Most commonly used in the [AppBar.flexibleSpace] field.
   const LFlexibleSpaceBar({
-    Key? key,
+    super.key,
     this.titleBuilder,
     this.backgroundBuilder,
     this.centerTitle,
     this.titlePadding,
     this.collapseMode = CollapseMode.parallax,
     this.stretchModes = const <StretchMode>[StretchMode.zoomBackground],
-  }) : super(key: key);
+  });
 
   final Function(BuildContext context, FlexibleSpaceBarSettings settings)?
       titleBuilder;

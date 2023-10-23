@@ -51,7 +51,7 @@ class LSliverAppBar extends StatelessWidget {
       bottom: bottom,
       flexibleSpace: LFlexibleSpaceBar(
         collapseMode: CollapseMode.pin,
-        stretchModes: [StretchMode.zoomBackground],
+        stretchModes: const [StretchMode.zoomBackground],
         titlePadding: EdgeInsets.zero,
         titleBuilder: (_, setting) => LayoutBuilder(
           builder: (context, constraints) {

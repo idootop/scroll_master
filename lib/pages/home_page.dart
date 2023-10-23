@@ -1,13 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:scroll_master/widgets/alive_keeper.dart';
-import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
-import 'package:scroll_master/widgets/l_sliver_app_bar.dart';
-
-import '../widgets/extended_tab_bar_view/extended_tabs.dart';
-
 import 'package:get/get.dart';
+import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
+
+import '../widgets/alive_keeper.dart';
+import '../widgets/extended_tab_bar_view/extended_tabs.dart';
+import '../widgets/l_sliver_app_bar.dart';
 
 class HomePage extends HookWidget {
   const HomePage({super.key});
@@ -26,7 +25,7 @@ class HomePage extends HookWidget {
                     : state.status == RefreshStatus.idle
                         ? ''
                         : 'Refreshing...',
-            style: const TextStyle(color: Colors.black, fontSize: 16),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ),
       ),
@@ -117,41 +116,41 @@ class HomePage extends HookWidget {
       };
     }, []);
 
-    return SafeArea(
-      top: true,
-      child: DefaultTabController(
-        length: 2,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Opacity(opacity: 0, child: refreshIndicator()),
-                SizedBox(height: outerTabBar.preferredSize.height),
-                Expanded(
-                  child: ExtendedTabBarView(children: [
-                    AliveKeeper(child: tabPage1(tab1controller)),
-                    AliveKeeper(child: tabPage2(tab2controller)),
-                  ]),
-                ),
-              ],
-            ),
-            Column(
+    return DefaultTabController(
+      length: 2,
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              SizedBox(height: outerTabBar.preferredSize.height),
+              Opacity(opacity: 0, child: refreshIndicator()),
+              Expanded(
+                child: ExtendedTabBarView(children: [
+                  AliveKeeper(child: tabPage1(tab1controller)),
+                  AliveKeeper(child: tabPage2(tab2controller)),
+                ]),
+              ),
+            ],
+          ),
+          Container(
+            color: Colors.blue,
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Material(
+                  color: Colors.black,
+                  child: outerTabBar,
+                ),
                 GetBuilder<RefreshContoller>(
                   builder: (state) => SizedBox(
                     height: state._overscroll.clamp(0, double.infinity),
                   ),
                 ),
                 refreshIndicator(),
-                Material(
-                  color: Colors.black,
-                  child: outerTabBar,
-                ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
