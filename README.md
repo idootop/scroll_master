@@ -6,6 +6,6 @@ It demonstrates features like pull-to-refresh for NestedScrollView, synchronized
 
 ## 🔥 Preview
 
-![demo.gif]()
+![](demo.gif)
 
 Try it online: [https://flutter-scroll-master.vercel.app/](https://flutter-scroll-master.vercel.app/)
